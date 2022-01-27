@@ -1,6 +1,7 @@
 package com.mojo.telegramAPIValidator;
 
-import org.springframework.web.util.HtmlUtils;
+import org.apache.logging.log4j.util.Strings;
+import org.apache.tomcat.util.buf.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.Locale;
 
 public class Validator {
 
-    public List<String> getCurseWords(){
+    public List<String> getCurseWords() {
         List<String> curseWords = new ArrayList<>();
         curseWords.add("ass");
         curseWords.add("dick");
@@ -27,23 +28,22 @@ public class Validator {
         return m.matches();
     }
 
-    public boolean isValidStringLength(final String string, final int length) {
-        return string.length() > 0 && string.length() < length;
+    private boolean isValidStringLength(final String string,final int minLength, final int maxLength) {
+        return string.length() > minLength && string.length() < maxLength;
     }
 
-    public boolean isValidFullName(final String name){
+    private boolean containsNoCurseWords(final String string){
         List<String> curseWords = this.getCurseWords();
-        if(this.isValidStringLength(name,100)){
-            return !(curseWords.stream().anyMatch(curseWord->name.toLowerCase().contains(curseWord)));
-        }
-        return false;
+       return curseWords.stream().noneMatch(curseWord -> string.toLowerCase().contains(curseWord));
     }
 
-    public boolean isValidMessage(final String message){
-        List<String> curseWords = this.getCurseWords();
-        if(this.isValidStringLength(message,300)){
-            return !(curseWords.stream().anyMatch(curseWord->message.toLowerCase().contains(curseWord)));
+    public boolean isValidString(final String String, final int minLength, final int maxLength) {
+        boolean isValidString = false;
+        if (this.isValidStringLength(String, minLength,maxLength)) {
+            if(this.containsNoCurseWords(String)){
+                isValidString = true;
+            }
         }
-        return false;
+        return isValidString;
     }
 }
