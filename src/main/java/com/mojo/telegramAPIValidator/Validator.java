@@ -1,11 +1,7 @@
 package com.mojo.telegramAPIValidator;
 
-import org.apache.logging.log4j.util.Strings;
-import org.apache.tomcat.util.buf.StringUtils;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 
 public class Validator {
@@ -28,22 +24,16 @@ public class Validator {
         return m.matches();
     }
 
-    private boolean isValidStringLength(final String string,final int minLength, final int maxLength) {
-        return string.length() > minLength && string.length() < maxLength;
+    private boolean isValidStringLength(final String string, final int minLength, final int maxLength) {
+        return string.length() >= minLength && string.length() < maxLength;
     }
 
-    private boolean containsNoCurseWords(final String string){
+    private boolean containsNoCurseWords(final String string) {
         List<String> curseWords = this.getCurseWords();
-       return curseWords.stream().noneMatch(curseWord -> string.toLowerCase().contains(curseWord));
+        return curseWords.stream().noneMatch(curseWord -> string.toLowerCase().contains(curseWord));
     }
 
     public boolean isValidString(final String String, final int minLength, final int maxLength) {
-        boolean isValidString = false;
-        if (this.isValidStringLength(String, minLength,maxLength)) {
-            if(this.containsNoCurseWords(String)){
-                isValidString = true;
-            }
-        }
-        return isValidString;
+        return this.isValidStringLength(String, minLength, maxLength) && this.containsNoCurseWords(String);
     }
 }

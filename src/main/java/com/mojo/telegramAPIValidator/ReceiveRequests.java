@@ -10,7 +10,7 @@ import org.springframework.web.client.RestTemplate;
 
 @RestController
 @RequestMapping("/")
-public class receiveRequests {
+public class ReceiveRequests {
     Validator validator = new Validator();
     RequestResponse requestResponse = new RequestResponse();
     @Value("${telegram.key}")
@@ -24,12 +24,17 @@ public class receiveRequests {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<String> request = new HttpEntity<>(headers);
-        RequestResponse result = this.handleValidationAndResponse(messageRequest.getEmail(),messageRequest.getFullName(),messageRequest.getMsg());
-        String string = messageRequest.getEmail() + " " + messageRequest.getFullName() + " " + messageRequest.getMsg();
+        RequestResponse result = this.handleValidationAndResponse(messageRequest.getEmail(), messageRequest.getFullName(), messageRequest.getMsg());
+        String string =
+                "Name: "+ messageRequest.getFullName() +
+                "\nEmail: " +messageRequest.getEmail() +
+                "\nMessage: " +  messageRequest.getMsg();
 
         String url = "https://api.telegram.org/bot{key}/sendMessage?chat_id={channel}&text={text}";
-        restTemplate.exchange(url, HttpMethod.POST, request, String.class,
-                telegramKey, telegramChannel, string);
+        if (requestResponse.isSuccess()) {
+            restTemplate.exchange(url, HttpMethod.POST, request, String.class,
+                    telegramKey, telegramChannel, string);
+        }
         return result;
 
     }
@@ -39,13 +44,13 @@ public class receiveRequests {
         return "your in the get";
     }
 
-    public RequestResponse handleValidationAndResponse(final String email, final String fullName, final String msg){
+    public RequestResponse handleValidationAndResponse(final String email, final String fullName, final String msg) {
         requestResponse.setValidEmail(validator.isValidEmail(email));
-        requestResponse.setValidName(validator.isValidString(fullName,3,100));
-        requestResponse.setValidMessage(validator.isValidString(msg,0,250));
+        requestResponse.setValidName(validator.isValidString(fullName, 3, 100));
+        requestResponse.setValidMessage(validator.isValidString(msg, 0, 250));
         requestResponse.setSuccess((requestResponse.isValidEmail() && requestResponse.isValidName() && requestResponse.isValidMessage()));
         requestResponse.setMessage("Thank you for reaching out! I'll get back to you as soon as possible");
-        if(!requestResponse.isSuccess()){
+        if (!requestResponse.isSuccess()) {
             requestResponse.setMessage("Sorry you failed");
         }
         return requestResponse;

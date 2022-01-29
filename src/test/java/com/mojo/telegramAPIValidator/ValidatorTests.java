@@ -37,4 +37,9 @@ public class ValidatorTests {
     public void test_isValidString_withCurseWord() {
         assertFalse(validator.isValidString("Fuck the world",0,100));
     }
+
+    @Test
+    public void test_isValidString_withEmptyString() {
+        assertTrue(validator.isValidString("",0,100));
+    }
 }
