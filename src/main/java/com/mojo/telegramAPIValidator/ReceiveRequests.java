@@ -25,10 +25,11 @@ public class ReceiveRequests {
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<String> request = new HttpEntity<>(headers);
         RequestResponse result = this.handleValidationAndResponse(messageRequest.getEmail(), messageRequest.getFullName(), messageRequest.getMsg());
-        String string =
-                "Name: "+ messageRequest.getFullName() +
-                "\nEmail: " +messageRequest.getEmail() +
-                "\nMessage: " +  messageRequest.getMsg();
+        String string = "Name: "+ messageRequest.getFullName();
+        string += "\nEmail: " +messageRequest.getEmail();
+        if(messageRequest.getMsg().length() > 0) {
+            string += "\nMessage: " + messageRequest.getMsg();
+        }
 
         String url = "https://api.telegram.org/bot{key}/sendMessage?chat_id={channel}&text={text}";
         if (requestResponse.isSuccess()) {
