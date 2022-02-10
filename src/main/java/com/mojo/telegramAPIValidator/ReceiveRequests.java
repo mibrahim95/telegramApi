@@ -40,20 +40,15 @@ public class ReceiveRequests {
 
     }
 
-    @GetMapping("teleGet")
-    public String telGet() {
-        return "your in the get";
-    }
 
     public RequestResponse handleValidationAndResponse(final String email, final String fullName, final String msg) {
-        requestResponse.setValidEmail(validator.isValidEmail(email));
-        requestResponse.setValidName(validator.isValidString(fullName, 3, 100));
-        requestResponse.setValidMessage(validator.isValidString(msg, 0, 250));
-        requestResponse.setSuccess((requestResponse.isValidEmail() && requestResponse.isValidName() && requestResponse.isValidMessage()));
-        requestResponse.setMessage("Thank you for reaching out! I'll get back to you as soon as possible");
-        if (!requestResponse.isSuccess()) {
-            requestResponse.setMessage("Sorry you failed");
+        if (fullName.length() < 1) {
+            throw new CustomException("Missing Name");
         }
+        if (email.length() < 1) {
+            throw new CustomException("Missing email");
+        }
+        requestResponse.setSuccess((validator.isValidEmail(email) && validator.isValidString(fullName, 3, 100) && validator.isValidString(msg, 0, 250)));
         return requestResponse;
     }
 }
